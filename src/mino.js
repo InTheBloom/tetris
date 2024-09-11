@@ -1,0 +1,206 @@
+const Mino = Object.freeze({
+    T: {
+        shape: [
+            [
+                [true, true, true],
+                [false, true, false],
+                [false, false, false],
+            ],
+            [
+                [false, true, false],
+                [false, true, true],
+                [false, true, false],
+            ],
+            [
+                [false, false, false],
+                [true, true, true],
+                [false, true, false],
+            ],
+            [
+                [false, true, false],
+                [true, true, false],
+                [false, true, false],
+            ]
+        ]
+    },
+    S: {
+        shape: [
+            [
+                [false, true, true],
+                [true, true, false],
+                [false, false, false],
+            ],
+            [
+                [false, true, false],
+                [false, true, true],
+                [false, false, true],
+            ],
+            [
+                [false, false, false],
+                [false, true, true],
+                [true, true, false],
+            ],
+            [
+                [true, false, false],
+                [true, true, false],
+                [false, true, false],
+            ],
+        ]
+    },
+    Z: {
+        shape: [
+            [
+                [true, true, false],
+                [false, true, true],
+                [false, false, false],
+            ],
+            [
+                [false, false, true],
+                [false, true, true],
+                [false, true, false],
+            ],
+            [
+                [false, false, false],
+                [true, true, true],
+                [true, false, false],
+            ],
+            [
+                [true, true, false],
+                [false, true, false],
+                [false, true, false],
+            ],
+        ]
+    },
+    L: {
+        shape: [
+            [
+                [false, false, true],
+                [true, true, true],
+                [false, false, false],
+            ],
+            [
+                [false, true, false],
+                [false, true, false],
+                [false, true, true],
+            ],
+            [
+                [false, false, false],
+                [true, true, true],
+                [true, false, false],
+            ],
+            [
+                [true, true, false],
+                [false, true, false],
+                [false, true, false],
+            ],
+        ]
+    },
+    J: {
+        shape: [
+            [
+                [true, false, false],
+                [true, true, true],
+                [false, false, false],
+            ],
+            [
+                [false, true, true],
+                [false, true, false],
+                [false, true, false],
+            ],
+            [
+                [false, false, false],
+                [true, true, true],
+                [false, false, true],
+            ],
+            [
+                [false, true, false],
+                [false, true, false],
+                [true, true, false],
+            ],
+        ]
+    },
+    O: {
+        shape: [
+            [
+                [true, true],
+                [true, true],
+            ],
+            [
+                [true, true],
+                [true, true],
+            ],
+            [
+                [true, true],
+                [true, true],
+            ],
+            [
+                [true, true],
+                [true, true],
+            ],
+        ]
+    },
+    I: {
+        shape: [
+            [
+                [false, false, false, false],
+                [true, true, true, true],
+                [false, false, false, false],
+                [false, false, false, false],
+            ],
+            [
+                [false, false, true, false],
+                [false, false, true, false],
+                [false, false, true, false],
+                [false, false, true, false],
+            ],
+            [
+                [false, false, false, false],
+                [false, false, false, false],
+                [true, true, true, true],
+                [false, false, false, false],
+            ],
+            [
+                [false, true, false, false],
+                [false, true, false, false],
+                [false, true, false, false],
+                [false, true, false, false],
+            ],
+        ]
+    },
+});
+
+class MinoState {
+    mino_type;
+    control_point;
+    direction = 0;
+
+    constructor (mino_type) {
+        this.mino_type = mino_type;
+
+        switch (this.mino_type) {
+            case "T":
+                this.control_point = [0, 3];
+                break;
+            case "S":
+                this.control_point = [0, 3];
+                break;
+            case "Z":
+                this.control_point = [0, 3];
+                break;
+            case "L":
+                this.control_point = [0, 3];
+                break;
+            case "J":
+                this.control_point = [0, 3];
+                break;
+            case "O":
+                this.control_point = [0, 4];
+                break;
+            case "I":
+                this.control_point = [0, 3];
+                break;
+            default:
+                console.err("MinoState::Constructor: Invalid mino name.");
+        }
+    }
+}
