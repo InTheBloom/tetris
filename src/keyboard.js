@@ -2,6 +2,10 @@
 const key_manager = new Map();
 
 document.addEventListener("keydown", (e) => {
+    if (typeof game !== "undefined" && game.is_running) {
+        e.preventDefault();
+    }
+
     key_manager.set(e.key, true);
 });
 

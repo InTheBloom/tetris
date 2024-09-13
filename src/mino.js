@@ -192,25 +192,25 @@ class MinoState {
 
         switch (this.mino_type) {
             case "T":
-                this.control_point = [0, 3];
+                this.control_point = [2, 3];
                 break;
             case "S":
-                this.control_point = [0, 3];
+                this.control_point = [2, 3];
                 break;
             case "Z":
-                this.control_point = [0, 3];
+                this.control_point = [2, 3];
                 break;
             case "L":
-                this.control_point = [0, 3];
+                this.control_point = [2, 3];
                 break;
             case "J":
-                this.control_point = [0, 3];
+                this.control_point = [2, 3];
                 break;
             case "O":
-                this.control_point = [0, 4];
+                this.control_point = [2, 4];
                 break;
             case "I":
-                this.control_point = [0, 3];
+                this.control_point = [2, 3];
                 break;
             default:
                 console.err("MinoState::Constructor: Invalid mino name.");

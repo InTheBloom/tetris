@@ -10,11 +10,11 @@ class Game {
     appeared = new Array(7).fill(false);
 
     // イベント関連
-    last_droped = 0;
-    drop_interval = 100;
+    last_droped;
+    drop_interval = 1000;
 
-    is_ground_now = false;
-    last_grounded = Infinity;
+    is_grounding_now;
+    last_grounded;
     place_interval = 500;
 
     constructor () {
@@ -48,7 +48,7 @@ class Game {
         this.refill();
     }
 
-    is_ground () {
+    is_grounding () {
         const sh = Mino[this.current_mino.mino_type].shape[this.current_mino.direction];
         const m = this.current_mino;
 
@@ -116,6 +116,12 @@ class Game {
         }
     }
 
+    force_quit (canvas) {
+        this.is_running = false;
+        const ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
     try_drop () {
         const sh = Mino[this.current_mino.mino_type].shape[this.current_mino.direction];
         const m = this.current_mino;
@@ -134,6 +140,48 @@ class Game {
         }
 
         if (!ok) m.control_point[0]--;
+        return ok;
+    }
+
+    try_move_right () {
+        const sh = Mino[this.current_mino.mino_type].shape[this.current_mino.direction];
+        const m = this.current_mino;
+        m.control_point[1]++;
+
+        let ok = true;
+        for (let i = 0; i < sh.length; i++) {
+            for (let j = 0; j < sh[i].length; j++) {
+                const ni = i + m.control_point[0];
+                const nj = j + m.control_point[1];
+                if (!sh[i][j]) continue;
+                if (this.board.length <= ni
+                    || this.board[ni].length <= nj
+                    || this.board[ni][nj] != color.empty) ok = false;
+            }
+        }
+
+        if (!ok) m.control_point[1]--;
+        return ok;
+    }
+
+    try_move_left () {
+        const sh = Mino[this.current_mino.mino_type].shape[this.current_mino.direction];
+        const m = this.current_mino;
+        m.control_point[1]--;
+
+        let ok = true;
+        for (let i = 0; i < sh.length; i++) {
+            for (let j = 0; j < sh[i].length; j++) {
+                const ni = i + m.control_point[0];
+                const nj = j + m.control_point[1];
+                if (!sh[i][j]) continue;
+                if (this.board.length <= ni
+                    || nj < 0
+                    || this.board[ni][nj] != color.empty) ok = false;
+            }
+        }
+
+        if (!ok) m.control_point[1]++;
         return ok;
     }
 
@@ -171,25 +219,25 @@ class Game {
         this.is_running = true;
         this.draw_board(canvas);
 
+        // タイマー関連のリセット
+        this.last_droped = performance.now();
+        this.last_grounded = Infinity;
+        this.is_grounding_now = false;
+
         const game_roop = (timestamp) => {
             if (!this.is_running) {
                 return;
             }
 
             (() => {
-                console.log(is_pressed("ArrowDown"));
-                console.log(is_pressed("ArrowLeft"));
-                console.log(is_pressed("ArrowRight"));
-                console.log(is_pressed("ArrowUp"));
-
-                // ゲームオーバーか？
+                // ゲームオーバー判定
                 if (this.is_gameover()) {
                     this.is_running = false;
                     console.log("gameover!");
                     return;
                 }
 
-                // 時間経過でミノが設置されたか？
+                // 時間経過によるミノ設置判定
                 if (this.place_interval < timestamp - this.last_grounded) {
                     this.write_current_mino();
                     this.get_next_mino();
@@ -197,25 +245,60 @@ class Game {
                     return;
                 }
 
-                if (this.is_ground()) {
-                    if (!this.is_ground_now) {
+                // ミノ自由落下判定
+                if (this.drop_interval < timestamp - this.last_droped) {
+                    const drop = Math.floor((timestamp - this.last_droped) / this.drop_interval);
+
+                    for (let i = 0; i < Math.min(drop, 24); i++) {
+                        if (!this.try_drop()) break;
+                    }
+                    this.write_current_mino();
+                    this.draw_board(canvas);
+                    this.clear_current_mino();
+
+                    this.last_droped = timestamp
+                        - (timestamp - this.last_droped) % this.drop_interval;
+                }
+
+                // 各タイミング変数のリセット
+                if (this.is_grounding()) {
+                    if (!this.is_grounding_now) {
                         this.last_grounded = timestamp;
-                        this.is_ground_now = true;
+                        this.is_grounding_now = true;
                     }
                     this.last_droped = timestamp;
                 }
                 else {
                     this.last_grounded = Infinity;
-                    this.is_ground_now = false;
+                    this.is_grounding_now = false;
                 }
 
-                // ミノが自由落下したか？
-                if (this.drop_interval < timestamp - this.last_droped) {
-                    this.try_drop();
+                // ハードドロップ
+                if (is_pressed("ArrowUp")) {
+                    while (this.try_drop()) {}
                     this.write_current_mino();
                     this.draw_board(canvas);
-                    this.clear_current_mino();
-                    this.last_droped = timestamp;
+                    this.get_next_mino();
+                    this.last_grounded = Infinity;
+                    return;
+                }
+
+                // 右
+                if (is_pressed("ArrowRight") && !is_pressed("ArrowLeft")) {
+                    if (this.try_move_right()) {
+                        this.write_current_mino();
+                        this.draw_board(canvas);
+                        this.clear_current_mino();
+                    }
+                }
+
+                // 左
+                if (is_pressed("ArrowLeft") && !is_pressed("ArrowRight")) {
+                    if (this.try_move_left()) {
+                        this.write_current_mino();
+                        this.draw_board(canvas);
+                        this.clear_current_mino();
+                    }
                 }
             })();
 

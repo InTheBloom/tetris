@@ -8,14 +8,20 @@ function main () {
     canvas.width = 10 * block_size_px + 11;
     canvas.height = 20 * block_size_px + 21;
 
-    // ゲームの発火登録
-    document.addEventListener("keydown", (e) => {
-        if (e.key == 'Escape') {
-            // 強制停止
-            if (typeof game !== "undefined") game.is_running = false;
+    game = new Game();
 
+    // ゲームのリセット
+    document.addEventListener("keydown", (e) => {
+        if (e.key == "Escape") {
+            game.force_quit(canvas);
             game = new Game();
-            game.start();
         }
     });
+
+    // ゲームの開始
+    document.addEventListener("keydown", (e) => {
+        if (e.key == "Enter") {
+            if (!game.is_running) game.start();
+        }
+    })
 }
