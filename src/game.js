@@ -242,6 +242,7 @@ class Game {
                     this.write_current_mino();
                     this.get_next_mino();
                     this.last_grounded = Infinity;
+                    this.is_grounding_now = false;
                     return;
                 }
 
@@ -280,6 +281,7 @@ class Game {
                     this.draw_board(canvas);
                     this.get_next_mino();
                     this.last_grounded = Infinity;
+                    this.is_grounding_now = false;
                     return;
                 }
 
