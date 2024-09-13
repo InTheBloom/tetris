@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", main);
 
 let canvas;
-let game;
+let game = undefined;
 
 function main () {
     canvas = document.getElementById("screen");
@@ -11,6 +11,9 @@ function main () {
     // ゲームの発火登録
     document.addEventListener("keydown", (e) => {
         if (e.key == 'Escape') {
+            // 強制停止
+            if (typeof game !== "undefined") game.is_running = false;
+
             game = new Game();
             game.start();
         }
