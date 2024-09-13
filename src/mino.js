@@ -1,9 +1,22 @@
+const color = {
+    empty: "white",
+    T: "purple",
+    S: "green",
+    Z: "red",
+    L: "orange",
+    J: "blue",
+    O: "yellow",
+    I: "cyan",
+};
+
+const block_size_px = Math.floor((window.innerHeight * 0.8) / 20);
+
 const Mino = Object.freeze({
     T: {
         shape: [
             [
-                [true, true, true],
                 [false, true, false],
+                [true, true, true],
                 [false, false, false],
             ],
             [
