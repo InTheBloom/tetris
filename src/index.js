@@ -13,7 +13,7 @@ function main () {
     // ゲームのリセット
     document.addEventListener("keydown", (e) => {
         if (e.key == "Escape") {
-            game.force_quit(canvas);
+            game.quit(canvas);
             game = new Game();
         }
     });
