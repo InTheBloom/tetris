@@ -7,6 +7,7 @@ class Board {
     }
 
     place_mino (mino) {
+        if (typeof mino === "undefined") return;
         const sh = Mino[mino.mino_type].shape[mino.direction];
 
         for (let i = 0; i < sh.length; i++) {
@@ -19,6 +20,7 @@ class Board {
     }
 
     clear_mino (mino) {
+        if (typeof mino === "undefined") return;
         const sh = Mino[mino.mino_type].shape[mino.direction];
 
         for (let i = 0; i < sh.length; i++) {
@@ -31,6 +33,7 @@ class Board {
     }
 
     is_grounding (mino) {
+        if (typeof mino === "undefined") return false;
         const sh = Mino[mino.mino_type].shape[mino.direction];
 
         for (let i = 0; i < sh.length; i++) {
@@ -48,7 +51,15 @@ class Board {
     }
 
     is_gameover (mino) {
-        // 条件1. ネクストがすでに置かれたミノに被っている
+        // 条件1. 21段目にテトリミノを設置する。
+        for (let i = 0; i < 4; i++) {
+            for (let j = 0; j < this.board[i].length; j++) {
+                if (this.board[i][j] != color.empty) return true;
+            }
+        }
+
+        // 条件2. ネクストがすでに置かれたミノに被っている
+        if (typeof mino === "undefined") return false;
         const sh = Mino[mino.mino_type].shape[mino.direction];
 
         for (let i = 0; i < sh.length; i++) {
@@ -61,17 +72,12 @@ class Board {
             }
         }
 
-        // 条件2. 21段目にテトリミノを設置する。
-        for (let i = 0; i < 4; i++) {
-            for (let j = 0; j < this.board[i].length; j++) {
-                if (this.board[i][j] != color.empty) return true;
-            }
-        }
-
         return false;
     }
 
     try_drop (mino) {
+        if (typeof mino === "undefined") return false;
+
         const sh = Mino[mino.mino_type].shape[mino.direction];
         mino.control_point[0]++;
 
@@ -92,6 +98,8 @@ class Board {
     }
 
     try_move_right (mino) {
+        if (typeof mino === "undefined") return false;
+
         const sh = Mino[mino.mino_type].shape[mino.direction];
         mino.control_point[1]++;
 
@@ -112,6 +120,8 @@ class Board {
     }
 
     try_move_left (mino) {
+        if (typeof mino === "undefined") return false;
+
         const sh = Mino[mino.mino_type].shape[mino.direction];
         mino.control_point[1]--;
 

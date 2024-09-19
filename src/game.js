@@ -23,10 +23,11 @@ class Game {
             }
 
             (() => {
-                // ネクストを補充するか
+                // ネクスト補充
                 if (typeof this.mino_manager.current_mino === "undefined") {
-                    if (!this.timing_manager.is_time_to_get_next_mino(timestamp)) return;
-                    this.mino_manager.get_next_mino();
+                    if (this.timing_manager.is_time_to_get_next_mino(timestamp)) {
+                        this.mino_manager.get_next_mino();
+                    }
                 }
 
                 // ゲームオーバー判定
@@ -58,19 +59,20 @@ class Game {
                 }
 
                 // ハードドロップ
-                if (is_pressed("ArrowUp")) {
+                if (this.timing_manager.try_hard_drop(timestamp)) {
                     while (this.board.try_drop(this.mino_manager.current_mino)) {}
                     this.board.place_mino(this.mino_manager.current_mino);
                     this.board.draw_board(canvas);
 
                     this.mino_manager.current_mino = undefined;
-
-                    this.timing_manager.did_hard_drop(timestamp);
                     return;
                 }
 
-                // 右
-                if (is_pressed("ArrowRight") && !is_pressed("ArrowLeft")) {
+                // ソフトドロップ
+                this.timing_manager.try_soft_drop(timestamp);
+
+                // 右移動
+                if (this.timing_manager.try_move_right(timestamp)) {
                     if (this.board.try_move_right(this.mino_manager.current_mino)) {
                         this.board.place_mino(this.mino_manager.current_mino);
                         this.board.draw_board(canvas);
@@ -78,8 +80,8 @@ class Game {
                     }
                 }
 
-                // 左
-                if (is_pressed("ArrowLeft") && !is_pressed("ArrowRight")) {
+                // 左移動
+                if (this.timing_manager.try_move_left(timestamp)) {
                     if (this.board.try_move_left(this.mino_manager.current_mino)) {
                         this.board.place_mino(this.mino_manager.current_mino);
                         this.board.draw_board(canvas);
@@ -88,7 +90,7 @@ class Game {
                 }
 
                 // 各タイミング変数のリセット
-                this.timing_manager.refresh_grounding_state(this.board, this.mino_manager, timestamp);
+                this.timing_manager.refresh_state(this.board, this.mino_manager, timestamp);
             })();
 
             window.requestAnimationFrame(game_roop);
