@@ -1,11 +1,7 @@
 class TimingManager {
     constructor () {
         this.drop_interval = 1000;
-        this.last_droped = Infinity;
-
         this.place_interval = 500;
-        this.last_grounded = Infinity;
-        this.is_grounding_now = false;
 
         this.last_placed = 0;
         this.mino_spawn_interval = 100;
@@ -22,21 +18,21 @@ class TimingManager {
         this.released_arrodown = true;
     }
 
-    is_time_to_place (timestamp) {
-        if (timestamp - this.last_grounded <= this.place_interval) return false;
-        this.last_grounded = Infinity;
-        this.is_grounding_now = false;
+    is_time_to_place (mino, timestamp) {
+        if (typeof mino === "undefined") return false;
+        if (timestamp - mino.last_grounded <= this.place_interval) return false;
+        mino.last_grounded = Infinity;
+        mino.is_grounding_now = false;
         this.last_placed = timestamp;
-        this.last_droped = timestamp + this.mino_spawn_interval - this.drop_interval;
         return true;
     }
 
-    is_time_to_drop (timestamp) {
-        if (this.last_droped == Infinity) this.last_droped = timestamp - this.drop_interval;;
-        if (timestamp - this.last_droped <= this.drop_interval) return -1;
+    is_time_to_drop (mino, timestamp) {
+        if (typeof mino === "undefined") return false;
+        if (timestamp - mino.last_droped <= this.drop_interval) return -1;
 
-        const drop = Math.floor((timestamp - this.last_droped) / this.drop_interval);
-        this.last_droped = timestamp;
+        const drop = Math.floor((timestamp - mino.last_droped) / this.drop_interval);
+        mino.last_droped = timestamp;
         return drop;
     }
 
@@ -45,24 +41,26 @@ class TimingManager {
         return true;
     }
 
-    check_soft_drop () {
-    }
-
     refresh_state (board, mino_manager, timestamp) {
+        const mino = mino_manager.current_mino;
+        if (typeof mino === "undefined") return false;
+
         if (board.is_grounding(mino_manager.current_mino)) {
-            if (!this.is_grounding_now) {
-                this.last_grounded = timestamp;
-                this.is_grounding_now = true;
+            if (!mino.is_grounding_now) {
+                mino.last_grounded = timestamp;
+                mino.is_grounding_now = true;
             }
-            this.last_droped = timestamp;
+            mino.last_droped = timestamp;
         }
         else {
-            this.last_grounded = Infinity;
-            this.is_grounding_now = false;
+            mino.last_grounded = Infinity;
+            mino.is_grounding_now = false;
         }
     }
 
-    try_hard_drop (timestamp) {
+    try_hard_drop (mino, timestamp) {
+        if (typeof mino === "undefined") return false;
+
         if (!is_pressed("ArrowUp")) {
             this.released_arrowup = true;
             return false;
@@ -71,11 +69,11 @@ class TimingManager {
         if (!this.released_arrowup) return false;
         this.released_arrowup = false;
 
-        this.last_grounded = Infinity;
-        this.is_grounding_now = false;
+        mino.last_grounded = Infinity;
+        mino.is_grounding_now = false;
         this.last_placed = timestamp;
 
-        this.last_droped = timestamp + this.mino_spawn_interval - this.drop_interval;
+        mino.last_droped = timestamp + this.mino_spawn_interval - this.drop_interval;
 
         return true;
     }
@@ -114,11 +112,13 @@ class TimingManager {
         return true;
     }
 
-    try_soft_drop (timestamp) {
+    try_soft_drop (mino, timestamp) {
+        if (typeof mino === "undefined") return false;
+
         if (is_pressed("ArrowDown")) {
             this.drop_interval = 1000 / 20;
             if (this.released_arrowdown) {
-                this.last_droped = timestamp - this.drop_interval;
+                mino.last_droped = timestamp - this.drop_interval;
                 this.released_arrowdown = false;
             }
         }

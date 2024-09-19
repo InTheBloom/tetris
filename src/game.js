@@ -27,6 +27,7 @@ class Game {
                 if (typeof this.mino_manager.current_mino === "undefined") {
                     if (this.timing_manager.is_time_to_get_next_mino(timestamp)) {
                         this.mino_manager.get_next_mino();
+                        this.mino_manager.current_mino.last_droped = timestamp - this.timing_manager.drop_interval;
                     }
                 }
 
@@ -38,7 +39,7 @@ class Game {
                 }
 
                 // 時間経過によるミノ設置判定
-                if (this.timing_manager.is_time_to_place(timestamp)) {
+                if (this.timing_manager.is_time_to_place(this.mino_manager.current_mino, timestamp)) {
                     this.board.place_mino(this.mino_manager.current_mino);
                     this.mino_manager.current_mino = undefined;
                     return;
@@ -46,7 +47,7 @@ class Game {
 
                 // ミノ自由落下判定
                 {
-                    const drop = this.timing_manager.is_time_to_drop(timestamp);
+                    const drop = this.timing_manager.is_time_to_drop(this.mino_manager.current_mino, timestamp);
 
                     if (0 < drop) {
                         for (let i = 0; i < Math.min(drop, 24); i++) {
@@ -59,7 +60,7 @@ class Game {
                 }
 
                 // ハードドロップ
-                if (this.timing_manager.try_hard_drop(timestamp)) {
+                if (this.timing_manager.try_hard_drop(this.mino_manager.current_mino, timestamp)) {
                     while (this.board.try_drop(this.mino_manager.current_mino)) {}
                     this.board.place_mino(this.mino_manager.current_mino);
                     this.board.draw_board(canvas);
@@ -69,7 +70,7 @@ class Game {
                 }
 
                 // ソフトドロップ
-                this.timing_manager.try_soft_drop(timestamp);
+                this.timing_manager.try_soft_drop(this.mino_manager.current_mino, timestamp);
 
                 // 右移動
                 if (this.timing_manager.try_move_right(timestamp)) {

@@ -183,12 +183,13 @@ const Mino = Object.freeze({
 });
 
 class MinoState {
-    mino_type;
-    control_point;
-    direction = 0;
-
     constructor (mino_type) {
+        this.direction = 0;
         this.mino_type = mino_type;
+
+        this.last_droped = Infinity;
+        this.last_grounded = Infinity;
+        this.is_grounding_now = false;
 
         switch (this.mino_type) {
             case "T":
