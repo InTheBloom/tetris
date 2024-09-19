@@ -20,9 +20,8 @@ class TimingManager {
 
     is_time_to_place (mino, timestamp) {
         if (typeof mino === "undefined") return false;
+        if (mino.placement_delay_count <= 0 && mino.is_grounding_now) return true;
         if (timestamp - mino.last_grounded <= this.place_interval) return false;
-        mino.last_grounded = Infinity;
-        mino.is_grounding_now = false;
         this.last_placed = timestamp;
         return true;
     }
@@ -32,30 +31,12 @@ class TimingManager {
         if (timestamp - mino.last_droped <= this.drop_interval) return -1;
 
         const drop = Math.floor((timestamp - mino.last_droped) / this.drop_interval);
-        mino.last_droped = timestamp;
         return drop;
     }
 
     is_time_to_get_next_mino (timestamp) {
         if (timestamp - this.last_placed <= this.mino_spawn_interval) return false;
         return true;
-    }
-
-    refresh_state (board, mino_manager, timestamp) {
-        const mino = mino_manager.current_mino;
-        if (typeof mino === "undefined") return false;
-
-        if (board.is_grounding(mino_manager.current_mino)) {
-            if (!mino.is_grounding_now) {
-                mino.last_grounded = timestamp;
-                mino.is_grounding_now = true;
-            }
-            mino.last_droped = timestamp;
-        }
-        else {
-            mino.last_grounded = Infinity;
-            mino.is_grounding_now = false;
-        }
     }
 
     try_hard_drop (mino, timestamp) {
@@ -69,11 +50,7 @@ class TimingManager {
         if (!this.released_arrowup) return false;
         this.released_arrowup = false;
 
-        mino.last_grounded = Infinity;
-        mino.is_grounding_now = false;
         this.last_placed = timestamp;
-
-        mino.last_droped = timestamp + this.mino_spawn_interval - this.drop_interval;
 
         return true;
     }
@@ -126,5 +103,11 @@ class TimingManager {
             this.drop_interval = 1000;
             this.released_arrowdown = true;
         }
+    }
+
+    try_rotate_right () {
+    }
+
+    try_rotate_left () {
     }
 }

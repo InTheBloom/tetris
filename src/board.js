@@ -10,6 +10,38 @@ class Board {
         if (typeof mino === "undefined") return;
         const sh = Mino[mino.mino_type].shape[mino.direction];
 
+        // ゴーストの描画
+        let max_depth = mino.control_point[0];
+        while (true) {
+            let ok = true;
+            for (let i = 0; i < sh.length; i++) {
+                for (let j = 0; j < sh[i].length; j++) {
+                    const ni = i + max_depth;
+                    const nj = j + mino.control_point[1];
+                    if (!sh[i][j]) continue;
+                    if (this.board.length <= ni
+                        || this.board[i].length <= nj
+                        || this.board[ni][nj] != color.empty) ok = false;
+                }
+            }
+            if (!ok) {
+                max_depth--;
+                break;
+            }
+
+            max_depth++;
+        }
+
+        for (let i = 0; i < sh.length; i++) {
+            for (let j = 0; j < sh[i].length; j++) {
+                const ni = i + max_depth;
+                const nj = j + mino.control_point[1];
+                if (sh[i][j]) {
+                    this.board[ni][nj] = color.ghost;
+                }
+            }
+        }
+
         for (let i = 0; i < sh.length; i++) {
             for (let j = 0; j < sh[i].length; j++) {
                 const ni = i + mino.control_point[0];
@@ -22,6 +54,13 @@ class Board {
     clear_mino (mino) {
         if (typeof mino === "undefined") return;
         const sh = Mino[mino.mino_type].shape[mino.direction];
+
+        // ゴーストの削除
+        for (let i = 0; i < this.board.length; i++) {
+            for (let j = 0; j < this.board[i].length; j++) {
+                if (this.board[i][j] == color.ghost) this.board[i][j] = color.empty;
+            }
+        }
 
         for (let i = 0; i < sh.length; i++) {
             for (let j = 0; j < sh[i].length; j++) {
@@ -42,7 +81,7 @@ class Board {
 
                 const ni = i + mino.control_point[0] + 1;
                 const nj = j + mino.control_point[1];
-                if (ni < this.board.length && nj < this.board[ni].length && this.board[ni][nj] != color.empty) return true;
+                if (ni < this.board.length && nj < this.board[ni].length && this.board[ni][nj] != color.empty && this.board[ni][nj] != color.ghost) return true;
                 if (ni == this.board.length) return true;
             }
         }
@@ -54,7 +93,7 @@ class Board {
         // 条件1. 21段目にテトリミノを設置する。
         for (let i = 0; i < 4; i++) {
             for (let j = 0; j < this.board[i].length; j++) {
-                if (this.board[i][j] != color.empty) return true;
+                if (this.board[i][j] != color.empty && this.board[i][j] != color.ghost) return true;
             }
         }
 
@@ -68,7 +107,7 @@ class Board {
                 const ni = i + mino.control_point[0];
                 const nj = j + mino.control_point[1];
 
-                if (this.board[ni][nj] != color.empty) return true;
+                if (this.board[ni][nj] != color.empty && this.board[ni][nj] != color.ghost) return true;
             }
         }
 
@@ -89,7 +128,7 @@ class Board {
                 if (!sh[i][j]) continue;
                 if (this.board.length <= ni
                     || this.board[ni].length <= nj
-                    || this.board[ni][nj] != color.empty) ok = false;
+                    || (this.board[ni][nj] != color.empty && this.board[ni][nj] != color.ghost)) ok = false;
             }
         }
 
@@ -111,7 +150,7 @@ class Board {
                 if (!sh[i][j]) continue;
                 if (this.board.length <= ni
                     || this.board[ni].length <= nj
-                    || this.board[ni][nj] != color.empty) ok = false;
+                    || (this.board[ni][nj] != color.empty && this.board[ni][nj] != color.ghost)) ok = false;
             }
         }
 
@@ -133,7 +172,7 @@ class Board {
                 if (!sh[i][j]) continue;
                 if (this.board.length <= ni
                     || nj < 0
-                    || this.board[ni][nj] != color.empty) ok = false;
+                    || (this.board[ni][nj] != color.empty && this.board[ni][nj] != color.ghost)) ok = false;
             }
         }
 

@@ -50,12 +50,20 @@ class Game {
                     const drop = this.timing_manager.is_time_to_drop(this.mino_manager.current_mino, timestamp);
 
                     if (0 < drop) {
+                        let real = 0;
                         for (let i = 0; i < Math.min(drop, 24); i++) {
                             if (!this.board.try_drop(this.mino_manager.current_mino)) break;
+                            real++;
                         }
                         this.board.place_mino(this.mino_manager.current_mino);
                         this.board.draw_board(canvas);
                         this.board.clear_mino(this.mino_manager.current_mino);
+
+                        if (0 < real) {
+                            this.mino_manager.current_mino.call_after_droped(
+                                this.board.is_grounding(this.mino_manager.current_mino),
+                                timestamp);
+                        }
                     }
                 }
 
@@ -78,6 +86,8 @@ class Game {
                         this.board.place_mino(this.mino_manager.current_mino);
                         this.board.draw_board(canvas);
                         this.board.clear_mino(this.mino_manager.current_mino);
+
+                        this.mino_manager.current_mino.call_after_moved_horizontally(this.board.is_grounding(this.mino_manager.current_mino), timestamp);
                     }
                 }
 
@@ -87,11 +97,16 @@ class Game {
                         this.board.place_mino(this.mino_manager.current_mino);
                         this.board.draw_board(canvas);
                         this.board.clear_mino(this.mino_manager.current_mino);
+
+                        this.mino_manager.current_mino.call_after_moved_horizontally(
+                            this.board.is_grounding(this.mino_manager.current_mino),
+                            timestamp);
                     }
                 }
 
-                // 各タイミング変数のリセット
-                this.timing_manager.refresh_state(this.board, this.mino_manager, timestamp);
+                // 右回転
+
+                // 左回転
             })();
 
             window.requestAnimationFrame(game_roop);

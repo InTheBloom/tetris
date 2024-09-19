@@ -1,5 +1,6 @@
 const color = {
     empty: "white",
+    ghost: "gray",
     T: "purple",
     S: "green",
     Z: "red",
@@ -191,6 +192,9 @@ class MinoState {
         this.last_grounded = Infinity;
         this.is_grounding_now = false;
 
+        this.lowest_height = 2;
+        this.placement_delay_count = 15;
+
         switch (this.mino_type) {
             case "T":
                 this.control_point = [2, 3];
@@ -215,6 +219,39 @@ class MinoState {
                 break;
             default:
                 console.err("MinoState::Constructor: Invalid mino name.");
+        }
+    }
+
+    call_after_droped (ground, timestamp) {
+        this.last_droped = timestamp;
+        if (this.lowest_height < this.control_point[0]) {
+            this.lowest_height = this.control_point[0];
+            this.placement_delay_count = 15;
+        }
+
+        if (ground) {
+            this.is_grounding_now = true;
+            this.last_grounded = timestamp;
+        }
+        else {
+            this.is_grounding_now = false;
+            this.last_grounded = Infinity;
+        }
+    }
+
+    call_after_moved_horizontally (ground, timestamp) {
+        if (ground) {
+            this.is_grounding_now = true;
+            this.placement_delay_count--;
+            this.last_grounded = timestamp;
+        }
+        else {
+            if (this.is_grounding_now) {
+                this.placement_delay_count--;
+                this.last_droped = timestamp;
+            }
+            this.is_grounding_now = false;
+            this.last_grounded = Infinity;
         }
     }
 }
