@@ -225,7 +225,7 @@ class MinoState {
         }
     }
 
-    init (timestamp, drop_interval) {
+    init (timestamp, drop_interval, board) {
         this.direction = 0;
 
         this.last_droped = timestamp - drop_interval;
@@ -236,6 +236,11 @@ class MinoState {
         this.placement_delay_count = 15;
 
         this.set_control_point();
+
+        if (board.is_grounding(this)) {
+            this.is_grounding_now = timestamp;
+            this.last_grounded = timestamp;
+        }
     }
 
     call_after_droped (ground, timestamp) {

@@ -38,15 +38,30 @@ class Game {
                 if (typeof this.mino_manager.current_mino === "undefined") {
                     if (this.timing_manager.is_time_to_get_next_mino(timestamp)) {
                         this.mino_manager.get_next_mino();
-                        this.mino_manager.current_mino.init(timestamp, this.timing_manager.drop_interval);
+                        this.mino_manager.current_mino.init(
+                            timestamp,
+                            this.timing_manager.drop_interval,
+                            this.board);
                     }
                 }
 
+                // ホールド操作
                 if (this.timing_manager.try_hold()) {
                     [this.mino_manager.current_mino, this.mino_manager.hold] = [this.mino_manager.hold, this.mino_manager.current_mino];
-                    if (typeof this.mino_manager.current_mino !== "undefined") this.mino_manager.current_mino.init(timestamp, this.timing_manager.drop_interval);
+                    if (typeof this.mino_manager.current_mino !== "undefined") {
+                        this.mino_manager.current_mino.init(
+                            timestamp,
+                            this.timing_manager.drop_interval,
+                            this.board);
+                    }
                     return;
                 }
+
+                // ホールドの描画
+                this.board.draw_hold(hold_screen, this.mino_manager.hold, this.timing_manager.used_hold);
+
+                // ネクストの描画
+                this.board.draw_next(next_screen, this.mino_manager.next_minos);
 
                 // 時間経過によるミノ設置判定
                 if (this.timing_manager.is_time_to_place(this.mino_manager.current_mino, timestamp)) {

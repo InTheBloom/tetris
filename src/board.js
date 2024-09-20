@@ -208,4 +208,63 @@ class Board {
             }
         }
     }
+
+    draw_hold (canvas_element, hold, used_hold) {
+        const ctx = canvas_element.getContext("2d");
+        ctx.clearRect(0, 0, canvas_element.width, canvas_element.height);
+        if (typeof hold === "undefined") return;
+
+        const m = Mino[hold.mino_type].shape[0];
+        // ミノによって開始地点を変える。
+        let cur = [1, 1.5];
+        if (hold.mino_type == "I") cur = [0.5, 1];
+
+        for (let i = 0; i < m.length; i++) {
+            cur[1] = 1.5;
+            if (hold.mino_type == "I") cur[1] = 1;
+
+            for (let j = 0; j < m[i].length; j++) {
+                if (m[i][j]) {
+                    ctx.fillStyle = color[hold.mino_type];
+                    if (used_hold) ctx.fillStyle = color.ghost;
+                    ctx.fillRect(cur[1] * block_size_px_subscreen, cur[0] * block_size_px_subscreen, block_size_px_subscreen, block_size_px_subscreen);
+                }
+
+                cur[1]++;
+            }
+            cur[0]++;
+        }
+    }
+
+    draw_next (canvas_element, next) {
+        const ctx = canvas_element.getContext("2d");
+        ctx.clearRect(0, 0, canvas_element.width, canvas_element.height);
+        let cur = [0.5, 1.5];
+
+        for (let x = 0; x < next.length; x++) {
+            const mino = next[x];
+            const m = Mino[mino.mino_type].shape[0];
+
+            if (mino.mino_type == "I") cur[0]--;
+
+            for (let i = 0; i < m.length; i++) {
+                cur[1] = 1.5;
+                if (mino.mino_type == "I") cur[1] = 1;
+
+                for (let j = 0; j < m[i].length; j++) {
+                    if (m[i][j]) {
+                        ctx.fillStyle = color[mino.mino_type];
+                        ctx.fillRect(cur[1] * block_size_px_subscreen, cur[0] * block_size_px_subscreen, block_size_px_subscreen, block_size_px_subscreen);
+                    }
+
+                    cur[1]++;
+                }
+
+                cur[0]++;
+            }
+
+            if (mino.mino_type == "O") cur[0]++;
+            if (mino.mino_type == "I") cur[0]--;
+        }
+    }
 }
