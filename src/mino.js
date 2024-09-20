@@ -76,13 +76,13 @@ const Mino = Object.freeze({
             ],
             [
                 [false, false, false],
-                [true, true, true],
-                [true, false, false],
+                [true, true, false],
+                [false , true, true],
             ],
             [
+                [false, true, false],
                 [true, true, false],
-                [false, true, false],
-                [false, true, false],
+                [true, false, false],
             ],
         ]
     },
@@ -269,6 +269,22 @@ class MinoState {
         else {
             if (this.is_grounding_now) {
                 this.placement_delay_count--;
+                this.last_droped = timestamp;
+            }
+            this.is_grounding_now = false;
+            this.last_grounded = Infinity;
+        }
+    }
+
+    call_after_rotate (ground, timestamp) {
+        this.placement_delay_count--;
+
+        if (ground) {
+            this.is_grounding_now = true;
+            this.last_grounded = timestamp;
+        }
+        else {
+            if (this.is_grounding_now) {
                 this.last_droped = timestamp;
             }
             this.is_grounding_now = false;

@@ -1,24 +1,40 @@
 class TimingManager {
     constructor () {
+        // 各種インターバル
         this.drop_interval = 1000;
         this.place_interval = 500;
 
+        // おいてからミノが出現するまで
         this.last_placed = 0;
         this.mino_spawn_interval = 100;
 
+        // 右移動
         this.released_arrowright = true;
         this.last_released_arrowright = Infinity;
+
+        // 左移動
         this.released_arrowleft = true;
         this.last_released_arrowleft = Infinity;
+
+        // 左右移動共通
         this.repeat_interval = 300;
         this.horizontal_move_interval = 50;
 
+        // ソフトドロップ用
         this.released_arrowup = true;
 
+        // ハードドロップ用
         this.released_arrodown = true;
 
+        // ホールド用
         this.used_hold = false;
         this.released_space = true;
+
+        // 右回転
+        this.released_f = false;
+
+        // 左回転
+        this.released_a = false;
     }
 
     try_hold () {
@@ -125,8 +141,26 @@ class TimingManager {
     }
 
     try_rotate_right () {
+        if (!is_pressed("f")
+            || (is_pressed("f") && is_pressed("a"))) {
+            this.released_f = true;
+            return false;
+        }
+        if (!this.released_f) return false;
+        this.released_f = false;
+
+        return true;
     }
 
     try_rotate_left () {
+        if (!is_pressed("a")
+            || (is_pressed("a") && is_pressed("f"))) {
+            this.released_a = true;
+            return false;
+        }
+        if (!this.released_a) return false;
+        this.released_a = false;
+
+        return true;
     }
 }

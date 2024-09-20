@@ -123,15 +123,34 @@ class Game {
                         this.board.draw_board(main_screen);
                         this.board.clear_mino(this.mino_manager.current_mino);
 
-                        this.mino_manager.current_mino.call_after_moved_horizontally(
-                            this.board.is_grounding(this.mino_manager.current_mino),
+                        this.mino_manager.current_mino.call_after_moved_horizontally(this.board.is_grounding(this.mino_manager.current_mino),
                             timestamp);
                     }
                 }
 
                 // 右回転
+                if (this.timing_manager.try_rotate_right()) {
+                    if (this.board.try_rotate_right(this.mino_manager.current_mino)) {
+                        this.board.place_mino(this.mino_manager.current_mino);
+                        this.board.draw_board(main_screen);
+                        this.board.clear_mino(this.mino_manager.current_mino);
+
+                        this.mino_manager.current_mino.call_after_rotate(this.board.is_grounding(this.mino_manager.current_mino),
+                            timestamp);
+                    }
+                }
 
                 // 左回転
+                if (this.timing_manager.try_rotate_left()) {
+                    if (this.board.try_rotate_left(this.mino_manager.current_mino)) {
+                        this.board.place_mino(this.mino_manager.current_mino);
+                        this.board.draw_board(main_screen);
+                        this.board.clear_mino(this.mino_manager.current_mino);
+
+                        this.mino_manager.current_mino.call_after_rotate(this.board.is_grounding(this.mino_manager.current_mino),
+                            timestamp);
+                    }
+                }
             })();
 
             window.requestAnimationFrame(game_roop);

@@ -180,6 +180,402 @@ class Board {
         return ok;
     }
 
+    check_no_collision (mino) {
+        const m = Mino[mino.mino_type].shape[mino.direction];
+        for (let i = 0; i < m.length; i++) {
+            for (let j = 0; j < m[i].length; j++) {
+                const ni = i + mino.control_point[0];
+                const nj = j + mino.control_point[1];
+                if (!m[i][j]) continue;
+                if (ni < 0 || this.board.length <= ni) return false;
+                if (nj < 0 || this.board[ni].length <= nj) return false;
+                if (this.board[ni][nj] != color.empty
+                && this.board[ni][nj] != color.ghost) return false;
+            }
+        }
+
+        return true;
+    }
+
+    // Super Roation Systemの実装(めんどい)
+    // 参考: https://tetrisch.github.io/main/srs.html
+    // なんか右回転D->Aの図が誤っているっぽい。(その通り実装すると一部回転入れができない)
+    try_rotate_right (mino) {
+        if (typeof mino === "undefined") return false;
+
+        const origin = mino.control_point.slice();
+        if (mino.mino_type == "O") return true;
+
+        if (mino.mino_type == "I") {
+            switch (mino.direction) {
+                case 0:
+                    mino.direction = 1;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1]--;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1] += 3;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1] -= 3;
+                    mino.control_point[0] -= 2;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1] += 3;
+                    mino.control_point[0] += 3;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.direction = 0;
+                    break;
+
+                case 1:
+                    mino.direction = 2;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1]--;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1] += 3;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1] -= 3;
+                    mino.control_point[0] -= 2;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1] += 3;
+                    mino.control_point[0] += 3;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.direction = 1;
+                    break;
+
+                case 2:
+                    mino.direction = 3;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1] += 2;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1] -= 3;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1] += 3;
+                    mino.control_point[0]--;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1] -= 3;
+                    mino.control_point[0] += 3;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.direction = 2;
+                    break;
+
+                case 3:
+                    mino.direction = 0;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1] -= 2;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1] += 3;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[0] += 2;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[0] -= 3;
+                    mino.control_point[1] -= 3;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.direction = 3;
+                    break;
+
+                default:
+                    console.err("Board.try_rotate_right: invalid direction");
+                    break;
+            }
+        }
+        else {
+            switch (mino.direction) {
+                case 0:
+                    mino.direction = 1;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1]--;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[0]--;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1]++;
+                    mino.control_point[0] += 3;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1]--;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.direction = 0;
+                    break;
+
+                case 1:
+                    mino.direction = 2;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1]++;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[0]++;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1]--;
+                    mino.control_point[0] -= 3;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1]++;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.direction = 1;
+                    break;
+
+                case 2:
+                    mino.direction = 3;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1]++;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[0]--;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1]--;
+                    mino.control_point[0] += 3;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1]++;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.direction = 2;
+                    break;
+
+                case 3:
+                    mino.direction = 0;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1]--;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[0]++;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1]++;
+                    mino.control_point[0] -= 3;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1]--;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.direction = 3;
+                    break;
+
+                default:
+                    console.err("Board.try_rotate_right: invalid direction");
+                    break;
+            }
+        }
+
+        mino.control_point = origin;
+        return false;
+    }
+
+    try_rotate_left (mino) {
+        if (typeof mino === "undefined") return false;
+
+        const origin = mino.control_point.slice();
+        if (mino.mino_type == "O") return true;
+
+        if (mino.mino_type == "I") {
+            switch (mino.direction) {
+                case 0:
+                    mino.direction = 3;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1]--;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1] += 3;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1] -= 3;
+                    mino.control_point[0] -= 2;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1] += 3;
+                    mino.control_point[0] += 3;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.direction = 0;
+                    break;
+
+                case 1:
+                    mino.direction = 0;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1] += 2;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1] -= 3;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1] += 3;
+                    mino.control_point[0]--;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1] -= 3;
+                    mino.control_point[0] += 3;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.direction = 1;
+                    break;
+
+                case 2:
+                    mino.direction = 1;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1]++;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1] -= 3;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1] += 3;
+                    mino.control_point[0] += 2;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1] -= 3;
+                    mino.control_point[0] -= 3;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.direction = 2;
+                    break;
+
+                case 3:
+                    mino.direction = 2;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1] -= 2;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1] += 3;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[0] += 2;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[0] -= 3;
+                    mino.control_point[1] -= 3;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.direction = 3;
+                    break;
+
+                default:
+                    console.err("Board.try_rotate_right: invalid direction");
+                    break;
+            }
+        }
+        else {
+            switch (mino.direction) {
+                case 0:
+                    mino.direction = 3;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1]++;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[0]--;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1]--;
+                    mino.control_point[0] += 3;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1]++;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.direction = 0;
+                    break;
+
+                case 1:
+                    mino.direction = 0;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1]++;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[0]++;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1]--;
+                    mino.control_point[0] -= 3;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1]++;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.direction = 1;
+                    break;
+
+                case 2:
+                    mino.direction = 1;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1]--;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[0]--;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1]++;
+                    mino.control_point[0] += 3;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1]--;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.direction = 2;
+                    break;
+
+                case 3:
+                    mino.direction = 2;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1]--;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[0]++;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1]++;
+                    mino.control_point[0] -= 3;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.control_point[1]--;
+                    if (this.check_no_collision(mino)) return true;
+
+                    mino.direction = 3;
+                    break;
+
+                default:
+                    console.err("Board.try_rotate_right: invalid direction");
+                    break;
+            }
+        }
+
+        mino.control_point = origin;
+        return false;
+    }
+
     draw_board (canvas_element) {
         const ctx = canvas_element.getContext("2d");
 
