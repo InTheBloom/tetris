@@ -16,6 +16,23 @@ class TimingManager {
         this.released_arrowup = true;
 
         this.released_arrodown = true;
+
+        this.used_hold = false;
+        this.released_space = true;
+    }
+
+    try_hold () {
+        if (!is_pressed(" ")) {
+            this.released_space = true;
+            return false;
+        }
+        if (!this.released_space) return false;
+        this.released_space = false;
+
+        if (this.used_hold) return false;
+        this.used_hold = true;
+
+        return true;
     }
 
     is_time_to_place (mino, timestamp) {
@@ -23,6 +40,7 @@ class TimingManager {
         if (mino.placement_delay_count <= 0 && mino.is_grounding_now) return true;
         if (timestamp - mino.last_grounded <= this.place_interval) return false;
         this.last_placed = timestamp;
+        this.used_hold = false;
         return true;
     }
 
@@ -51,6 +69,7 @@ class TimingManager {
         this.released_arrowup = false;
 
         this.last_placed = timestamp;
+        this.used_hold = false;
 
         return true;
     }

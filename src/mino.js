@@ -11,6 +11,7 @@ const color = {
 };
 
 const block_size_px = Math.floor((window.innerHeight * 0.8) / 20);
+const block_size_px_subscreen = Math.floor(block_size_px * 1.0);
 
 const Mino = Object.freeze({
     T: {
@@ -194,7 +195,9 @@ class MinoState {
 
         this.lowest_height = 2;
         this.placement_delay_count = 15;
+    }
 
+    set_control_point () {
         switch (this.mino_type) {
             case "T":
                 this.control_point = [2, 3];
@@ -220,6 +223,19 @@ class MinoState {
             default:
                 console.err("MinoState::Constructor: Invalid mino name.");
         }
+    }
+
+    init (timestamp, drop_interval) {
+        this.direction = 0;
+
+        this.last_droped = timestamp - drop_interval;
+        this.last_grounded = Infinity;
+        this.is_grounding_now = false;
+
+        this.lowest_height = 2;
+        this.placement_delay_count = 15;
+
+        this.set_control_point();
     }
 
     call_after_droped (ground, timestamp) {
