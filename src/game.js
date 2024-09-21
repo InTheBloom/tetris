@@ -3,7 +3,7 @@ class Game {
         this.board = new Board();
         this.mino_manager = new MinoManager();
         this.timing_manager = new TimingManager();
-        this.score_manager = new ScoreManager();
+        this.score_manager = new ScoreManager(highest_cleared_lines_board);
 
 
         this.is_running = false;
@@ -25,6 +25,7 @@ class Game {
 
         const game_roop = (timestamp) => {
             if (!this.is_running) {
+                this.score_manager.update_highest();
                 return;
             }
 
@@ -33,7 +34,9 @@ class Game {
                 if (this.board.is_gameover(this.mino_manager.current_mino)) {
                     this.is_running = false;
                     this.is_gameovered = true;
-                    console.log("gameover!");
+                    alert("gameover!\nPress ESC to reset.");
+
+                    this.score_manager.update_highest();
                     return;
                 }
 
@@ -49,7 +52,8 @@ class Game {
                 }
 
                 // ライン消去
-                const cleared_lines = this.board.check_cleared_lines();
+                const count = this.board.check_cleared_lines();
+                this.score_manager.update_score(count);
 
                 // ホールド操作
                 if (this.timing_manager.try_hold()) {

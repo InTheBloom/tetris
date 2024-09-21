@@ -633,7 +633,12 @@ class Board {
         for (let i = 4; i < this.board.length; i++) {
             for (let j = 0; j < this.board[i].length; j++) {
                 ctx.fillStyle = this.board[i][j];
-                ctx.fillRect(j * block_size_px + j + 1, (i - 4) * block_size_px + i - 4 + 1, block_size_px, block_size_px);
+                if (this.board[i][j] == color.empty) {
+                    ctx.clearRect(j * block_size_px + j + 1, (i - 4) * block_size_px + i - 4 + 1, block_size_px, block_size_px);
+                }
+                else {
+                    ctx.fillRect(j * block_size_px + j + 1, (i - 4) * block_size_px + i - 4 + 1, block_size_px, block_size_px);
+                }
             }
         }
     }

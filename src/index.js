@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", main);
 
 let main_screen, hold_screen, next_screen;
+let cleared_lines_board, highest_cleared_lines_board;
 let game = undefined;
 
 function main () {
@@ -15,6 +16,9 @@ function main () {
     next_screen = document.getElementById("next_screen");
     next_screen.width = 6 * block_size_px_subscreen;
     next_screen.height = 15 * block_size_px_subscreen;
+
+    cleared_lines_board = document.getElementById("lines_board");
+    highest_cleared_lines_board = document.getElementById("highest_lines_board");
 
     game = new Game();
 

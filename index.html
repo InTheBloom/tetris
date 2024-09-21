@@ -2,7 +2,7 @@
 
 <html lang="ja" style="height: 100%;">
     <head>
-        <title>Tetris</title>
+        <title>Winter Tetris</title>
         <link rel="icon" type="image/x-icon" href="favicon.ico">
 
         <meta charset="utf-8">
@@ -15,22 +15,59 @@
         <script defer src="src/board.js"></script>
         <script defer src="src/minomanager.js"></script>
         <script defer src="src/timingmanager.js"></script>
+        <script defer src="src/scoremanager.js"></script>
     </head>
 
     <body style="height: 100%; margin: 0;">
+        <video muted loop playsinline autoplay style="width: 100%; height: 100%; object-fit: fill; position: fixed; top: 0; left: 0; z-index: -2;">
+            <source src="assets/winter.mp4">
+        </video>
+        <div id="curtain" style="width: 100%; height: 100%; object-fit: fill; position: fixed; top: 0; left: 0; z-index: -1; background: white; opacity: 0.7;">
+        </div>
+
         <div style="padding: 0; width: 100%; height: 100%;">
             <div style="display: flex; flex-direction: column; align-items: center;">
-                <h1>Tetris</h1>
+                <h1>Winter Tetris</h1>
 
                 <!-- game area -->
                 <div style="display: flex; flex-direction: row; justify-content: center; align-items: flex-start;">
-                    <canvas id="hold_screen" style="border: black solid 1px;"></canvas>
-                    <canvas id="main_screen" style="border: black solid 1px;"></canvas>
-                    <canvas id="next_screen" style="border: black solid 1px;"></canvas>
-                    <p>得点</p>
+                    <div>
+                        <canvas id="hold_screen" style="border: black solid 1px; background-color: transparent;"></canvas>
+                        <p>消したライン数:<br><span id="lines_board"></span></p>
+                        <p>最高記録:<br><span id="highest_lines_board"></span></p>
+                    </div>
+                    <canvas id="main_screen" style="border: black solid 1px; background-color: transparent;"></canvas>
+                    <canvas id="next_screen" style="border: black solid 1px; background-color: transparent;"></canvas>
                 </div>
             </div>
-            <div>Press Enter to start game. Press Esc to reset.</div>
+
+            <h2 style="color: red;">注意</h2>
+            <p><em>このゲームはPCからのアクセスを想定しています。スマートフォンから遊べない(遊びにくい)恐れがあります。ご了承ください。</em></p>
+            <p>PCからのアクセスでうまく動かない場合は<a href="https://github.com/InTheBloom">私</a>までお願いします。</p>
+
+            <h2>遊び方</h2>
+            <p>Enterキーを押すとゲームが始まります。Escキーを押すとリセットされます。テトリミノの操作は<a href="https://tetr.io/">tetr.io</a>に合わせています。</p>
+
+            <ul>
+                <li>キーを左に動かす: 矢印キー左</li>
+                <li>キーを右に動かす: 矢印キー右</li>
+                <li>ミノを右回転: x</li>
+                <li>ミノを左回転: z</li>
+                <li>ミノをホールド: c</li>
+                <li>ハードドロップ: space</li>
+                <li>ソフトドロップ: 矢印キー下</li>
+            </ul>
+
+            <h2>設定</h2>
+            <p>背景動画の設定:</p>
+            <input type="range" min="0" max="1" step="0.05" value="0.3" id="trans" name="trans">
+            <label for="trans">透明度</label>
+            <script>
+                trans.addEventListener("input", (e) => { curtain.style.opacity = 1 - parseFloat(e.target.value); });
+            </script>
+
+            <h2>クレジット</h2>
+            <p>背景画像: <a href="https://pixabay.com/ja/videos/%E6%9C%A8-%E9%9B%AA-%E5%86%AC-%E9%9B%AA%E3%81%AB%E8%A6%86%E3%82%8F%E3%82%8C%E3%81%9F-191443/">https://pixabay.com/ja/videos/%E6%9C%A8-%E9%9B%AA-%E5%86%AC-%E9%9B%AA%E3%81%AB%E8%A6%86%E3%82%8F%E3%82%8C%E3%81%9F-191443/</a></p>
         </div>
     </body>
 </html>
