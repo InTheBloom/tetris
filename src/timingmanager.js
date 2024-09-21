@@ -29,12 +29,16 @@ class TimingManager {
         // ホールド用
         this.used_hold = false;
         this.released_space = true;
+        this.update_hold_view = true;
 
         // 右回転
         this.released_f = false;
 
         // 左回転
         this.released_a = false;
+
+        // ネクスト再描画用
+        this.update_next_view = true;
     }
 
     try_hold () {
@@ -48,6 +52,7 @@ class TimingManager {
         if (this.used_hold) return false;
         this.used_hold = true;
 
+        this.update_hold_view = true;
         return true;
     }
 
@@ -57,6 +62,7 @@ class TimingManager {
         if (timestamp - mino.last_grounded <= this.place_interval) return false;
         this.last_placed = timestamp;
         this.used_hold = false;
+        this.update_hold_view = true;
         return true;
     }
 
@@ -70,6 +76,7 @@ class TimingManager {
 
     is_time_to_get_next_mino (timestamp) {
         if (timestamp - this.last_placed <= this.mino_spawn_interval) return false;
+        this.update_next_view = true;
         return true;
     }
 
@@ -86,6 +93,7 @@ class TimingManager {
 
         this.last_placed = timestamp;
         this.used_hold = false;
+        this.update_hold_view = true;
 
         return true;
     }

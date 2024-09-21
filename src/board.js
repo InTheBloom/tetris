@@ -580,6 +580,7 @@ class Board {
 
     check_cleared_lines () {
         let res = 0;
+        let candi = [];
         for (let i = this.board.length - 1; 0 <= i; i--) {
             let clear = true;
             for (let j = 0; j < this.board[i].length; j++) {
@@ -591,19 +592,25 @@ class Board {
             }
 
             if (clear) {
+                candi.push(i);
                 res++;
-
-                // 詰める作業までやってしまおう
-                for (let k = i; 0 < k; k--) {
-                    for (let l = 0; l < this.board[k].length; l++) {
-                        this.board[k][l] = this.board[k - 1][l];
-                    }
-                }
-
-                for (let l = 0; l < this.board[0].length; l++) {
-                    this.board[0][l] = color.empty;
-                }
             }
+        }
+
+        // 詰める
+        let cur = this.board.length - 1;
+        for (let i = this.board.length - 1; 0 <= i; i--) {
+            if (candi[0] == i) {
+                candi.shift();
+                continue;
+            }
+            this.board[cur] = this.board[i];
+            cur--;
+        }
+
+        while (0 <= cur) {
+            this.board[cur] = new Array(10).fill(color.empty);
+            cur--;
         }
 
         return res;

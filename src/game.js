@@ -4,8 +4,11 @@ class Game {
         this.mino_manager = new MinoManager();
         this.timing_manager = new TimingManager();
         this.score_manager = new ScoreManager(highest_cleared_lines_board);
+        this.sound = new Sound();
 
 
+        this.max_fps = 60;
+        this.current_time;
         this.is_running = false;
         this.is_gameovered = false;
     }
@@ -18,12 +21,20 @@ class Game {
         }
     }
 
-    // ゲームループも抱え込ませちゃう
+    // ゲームループ
     start () {
         this.is_running = true;
         this.board.draw_board(main_screen);
 
+        this.current_time = performance.now();
+
         const game_roop = (timestamp) => {
+            if (timestamp - this.current_time < 1 / this.max_fps) {
+                requestAnimationFrame(game_roop);
+                return;
+            }
+            this.current_time = timestamp;
+
             if (!this.is_running) {
                 this.score_manager.update_highest();
                 return;
@@ -53,6 +64,7 @@ class Game {
 
                 // ライン消去
                 const count = this.board.check_cleared_lines();
+                this.sound.play_line_clear_sound(count);
                 this.score_manager.update_score(count);
 
                 // ホールド操作
@@ -68,10 +80,16 @@ class Game {
                 }
 
                 // ホールドの描画
-                this.board.draw_hold(hold_screen, this.mino_manager.hold, this.timing_manager.used_hold);
+                if (this.timing_manager.update_hold_view) {
+                    this.timing_manager.update_hold_view = false;
+                    this.board.draw_hold(hold_screen, this.mino_manager.hold, this.timing_manager.used_hold);
+                }
 
                 // ネクストの描画
-                this.board.draw_next(next_screen, this.mino_manager.next_minos);
+                if (this.timing_manager.update_next_view) {
+                    this.timing_manager.update_next_view = false;
+                    this.board.draw_next(next_screen, this.mino_manager.next_minos);
+                }
 
                 // 時間経過によるミノ設置判定
                 if (this.timing_manager.is_time_to_place(this.mino_manager.current_mino, timestamp)) {
