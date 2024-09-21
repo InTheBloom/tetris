@@ -17,25 +17,25 @@ function is_pressed (key) {
     // 各キーの判定だけゲームパッドをかませる
 
     // R1
-    if (key == "c" && gamepads && gamepads[0].buttons[5].pressed) return true;
+    if (key == "c" && 0 < Object.keys(gamepads).length && gamepads[0].buttons[5].pressed) return true;
 
     // 右
-    if (key == "ArrowRight" && gamepads && gamepads[0].buttons[15].pressed) return true;
+    if (key == "ArrowRight" && 0 < Object.keys(gamepads).length && gamepads[0].buttons[15].pressed) return true;
 
     // 左
-    if (key == "ArrowLeft" && gamepads && gamepads[0].buttons[14].pressed) return true;
+    if (key == "ArrowLeft" && 0 < Object.keys(gamepads).length && gamepads[0].buttons[14].pressed) return true;
 
     // 下
-    if (key == "ArrowDown" && gamepads && gamepads[0].buttons[13].pressed) return true;
+    if (key == "ArrowDown" && 0 < Object.keys(gamepads).length && gamepads[0].buttons[13].pressed) return true;
 
     // 上
-    if (key == " " && gamepads && gamepads[0].buttons[12].pressed) return true;
+    if (key == " " && 0 < Object.keys(gamepads).length && gamepads[0].buttons[12].pressed) return true;
 
     // 〇
-    if (key == "x" && gamepads && gamepads[0].buttons[1].pressed) return true;
+    if (key == "x" && 0 < Object.keys(gamepads).length && gamepads[0].buttons[1].pressed) return true;
 
     // ×
-    if (key == "z" && gamepads && gamepads[0].buttons[0].pressed) return true;
+    if (key == "z" && 0 < Object.keys(gamepads).length && gamepads[0].buttons[0].pressed) return true;
 
     const v = key_manager.get(key);
     return typeof v === "undefined" ? false : v;

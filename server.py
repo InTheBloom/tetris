@@ -4,4 +4,4 @@ server = Server()
 server.watch('./*')
 server.watch('./src/*')
 
-server.serve(root='./');
+server.serve(root='./', port=5000);
