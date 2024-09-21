@@ -90,12 +90,14 @@ class Board {
     }
 
     is_gameover (mino) {
+        /* 最近のテトリスは21段目においても死なないのでこれ外す。
         // 条件1. 21段目にテトリミノを設置する。
         for (let i = 0; i < 4; i++) {
             for (let j = 0; j < this.board[i].length; j++) {
                 if (this.board[i][j] != color.empty && this.board[i][j] != color.ghost) return true;
             }
         }
+        */
 
         // 条件2. ネクストがすでに置かれたミノに被っている
         if (typeof mino === "undefined") return false;
@@ -574,6 +576,37 @@ class Board {
 
         mino.control_point = origin;
         return false;
+    }
+
+    check_cleared_lines () {
+        let res = 0;
+        for (let i = this.board.length - 1; 0 <= i; i--) {
+            let clear = true;
+            for (let j = 0; j < this.board[i].length; j++) {
+                if (this.board[i][j] == color.empty
+                || this.board[i][j] == color.ghost) {
+                    clear = false;
+                    break;
+                }
+            }
+
+            if (clear) {
+                res++;
+
+                // 詰める作業までやってしまおう
+                for (let k = i; 0 < k; k--) {
+                    for (let l = 0; l < this.board[k].length; l++) {
+                        this.board[k][l] = this.board[k - 1][l];
+                    }
+                }
+
+                for (let l = 0; l < this.board[0].length; l++) {
+                    this.board[0][l] = color.empty;
+                }
+            }
+        }
+
+        return res;
     }
 
     draw_board (canvas_element) {

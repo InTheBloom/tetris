@@ -3,6 +3,9 @@ class Game {
         this.board = new Board();
         this.mino_manager = new MinoManager();
         this.timing_manager = new TimingManager();
+        this.score_manager = new ScoreManager();
+
+
         this.is_running = false;
         this.is_gameovered = false;
     }
@@ -44,6 +47,9 @@ class Game {
                             this.board);
                     }
                 }
+
+                // ライン消去
+                const cleared_lines = this.board.check_cleared_lines();
 
                 // ホールド操作
                 if (this.timing_manager.try_hold()) {
