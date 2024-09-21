@@ -15,6 +15,11 @@ class Game {
 
     quit (canvas_elements) {
         this.is_running = false;
+
+        // 終了時にやらないとちょっとまずい処理
+        this.sound.stop_bgm();
+        this.score_manager.update_highest();
+
         for (const c of canvas_elements) {
             const ctx = c.getContext("2d");
             ctx.clearRect(0, 0, c.width, c.height);
@@ -28,6 +33,8 @@ class Game {
 
         this.current_time = performance.now();
 
+        this.sound.play_bgm();
+
         const game_roop = (timestamp) => {
             if (timestamp - this.current_time < 1 / this.max_fps) {
                 requestAnimationFrame(game_roop);
@@ -37,6 +44,7 @@ class Game {
 
             if (!this.is_running) {
                 this.score_manager.update_highest();
+                this.sound.stop_bgm();
                 return;
             }
 
