@@ -17,13 +17,13 @@ class TimingManager {
         this.last_released_arrowleft = Infinity;
 
         // 左右移動共通
-        this.repeat_interval = 300;
+        this.repeat_interval = 200;
         this.horizontal_move_interval = 50;
 
-        // ソフトドロップ用
+        // ハードドロップ用
         this.released_arrowup = true;
 
-        // ハードドロップ用
+        // ソフトドロップ用
         this.released_arrodown = true;
 
         // ホールド用
@@ -42,7 +42,7 @@ class TimingManager {
     }
 
     try_hold () {
-        if (!is_pressed(" ")) {
+        if (!is_pressed("c")) {
             this.released_space = true;
             return false;
         }
@@ -83,7 +83,7 @@ class TimingManager {
     try_hard_drop (mino, timestamp) {
         if (typeof mino === "undefined") return false;
 
-        if (!is_pressed("ArrowUp")) {
+        if (!is_pressed(" ")) {
             this.released_arrowup = true;
             return false;
         }
@@ -149,8 +149,8 @@ class TimingManager {
     }
 
     try_rotate_right () {
-        if (!is_pressed("f")
-            || (is_pressed("f") && is_pressed("a"))) {
+        if (!is_pressed("x")
+            || (is_pressed("x") && is_pressed("z"))) {
             this.released_f = true;
             return false;
         }
@@ -161,8 +161,8 @@ class TimingManager {
     }
 
     try_rotate_left () {
-        if (!is_pressed("a")
-            || (is_pressed("a") && is_pressed("f"))) {
+        if (!is_pressed("z")
+            || (is_pressed("z") && is_pressed("x"))) {
             this.released_a = true;
             return false;
         }
